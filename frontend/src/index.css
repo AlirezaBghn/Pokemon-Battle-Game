@@ -1,0 +1,75 @@
+/* frontend/src/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global retro style */
+body {
+  @apply bg-retroBlack text-retroNeonGreen font-retro;
+}
+
+/* Center main content area (if needed globally, already done in App.jsx main) */
+main {
+  @apply flex justify-center items-center min-h-screen;
+}
+
+/* Neon flicker animation for headers */
+@keyframes neon-flicker {
+  0%,
+  18%,
+  22%,
+  25%,
+  53%,
+  57%,
+  100% {
+    text-shadow: 0 0 4px #fff, 0 0 11px #fff, 0 0 19px #fff, 0 0 40px #ff6ec7,
+      0 0 80px #ff6ec7, 0 0 90px #ff6ec7, 0 0 100px #ff6ec7, 0 0 150px #ff6ec7;
+  }
+  20%,
+  24%,
+  55% {
+    text-shadow: none;
+  }
+}
+
+/* Apply neon flicker to headers */
+h2 {
+  animation: neon-flicker 1.5s infinite alternate;
+}
+
+/* Navigation bar styling */
+nav {
+  @apply bg-retroNeonBlue p-4;
+}
+
+nav a {
+  @apply text-retroNeonGreen hover:text-retroNeonPink font-bold;
+}
+
+/* Retro card styling for content containers */
+.bg-retro-card {
+  background: linear-gradient(145deg, #1b03a3, #b026ff);
+  @apply p-6 rounded shadow-lg;
+}
+
+/* Button styling with a retro neon border and hover effect */
+button {
+  @apply border-2 border-retroNeonGreen px-3 py-1 transition-all duration-200;
+}
+button:hover {
+  @apply bg-retroNeonGreen text-retroBlack;
+}
+
+/* Input styling */
+input {
+  @apply bg-gray-800 border border-retroNeonGreen text-retroNeonGreen p-2 rounded;
+}
+
+/* Table styling for the leaderboard */
+table {
+  @apply w-full border-collapse;
+}
+table th,
+table td {
+  @apply border border-retroNeonPink p-2;
+}
