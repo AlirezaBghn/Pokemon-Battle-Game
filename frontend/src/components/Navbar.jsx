@@ -6,14 +6,35 @@ const Navbar = () => {
     <nav className="bg-retroNeonBlue p-4">
       <div className="container mx-auto flex justify-between">
         <div className="flex space-x-4">
-          <Link to="/" className="hover:underline text-retroNeonGreen font-bold">
+          <Link
+            to="/"
+            className="hover:underline text-retroNeonGreen font-bold"
+          >
             Guess Game
           </Link>
-          <Link to="/leaderboard" className="hover:underline text-retroNeonGreen font-bold">
+          <Link
+            to="/leaderboard"
+            className="hover:underline text-retroNeonGreen font-bold"
+          >
             Leaderboard
           </Link>
-          <Link to="/signin" className="hover:underline text-retroNeonGreen font-bold">
+          <Link
+            to="/signin"
+            className="hover:underline text-retroNeonGreen font-bold"
+          >
             Sign In
+          </Link>
+          <Link
+            to="/signup"
+            className="hover:underline text-retroNeonGreen font-bold"
+          >
+            Sign Up
+          </Link>
+          <Link
+            to="/profile"
+            className="hover:underline text-retroNeonGreen font-bold"
+          >
+            Profile
           </Link>
         </div>
       </div>
