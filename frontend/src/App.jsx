@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import GuessGame from "./pages/GuessGame";
 import Leaderboard from "./pages/Leaderboard";
 import SignIn from "./pages/SignIn"; // ✅ Import SignIn correctly
+import SignUp from "./pages/SignUp";
+import Profile from "./pages/Profile";
 import Navbar from "./components/Navbar"; // ✅ Import Navbar
 
 function App() {
@@ -15,7 +17,10 @@ function App() {
           <Routes>
             <Route path="/" element={<GuessGame />} />
             <Route path="/leaderboard" element={<Leaderboard />} />
-            <Route path="/signin" element={<SignIn />} /> {/* ✅ Add SignIn Route */}
+            <Route path="/signin" element={<SignIn />} />{" "}
+            {/* ✅ Add SignIn Route */}
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/profile" element={<Profile />} />
           </Routes>
         </div>
       </main>
