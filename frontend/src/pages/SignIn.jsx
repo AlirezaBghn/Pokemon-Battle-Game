@@ -1,23 +1,43 @@
-import React from "react";
+import React, { useState } from "react";
 
 const SignIn = () => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("User signed in with:", { username, password });
+    // Here, you can send the credentials to your backend
+  };
+
   return (
-    <div className="flex items-center justify-center h-screen bg-black">
-      <div className="border-4 border-neon-pink p-8 rounded-lg text-center shadow-neon">
-        <h1 className="text-4xl font-pixel text-neon-cyan mb-4">Sign In</h1>
-        <input
-          type="text"
-          placeholder="Username"
-          className="block w-full p-2 mb-4 bg-black border-2 border-neon-cyan text-neon-cyan text-center font-pixel"
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          className="block w-full p-2 mb-4 bg-black border-2 border-neon-cyan text-neon-cyan text-center font-pixel"
-        />
-        <button className="w-full p-2 bg-neon-pink text-black font-pixel text-lg hover:bg-neon-cyan transition">
-          ENTER
-        </button>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-retroBlack text-retroNeonGreen">
+      <div className="bg-retro-card p-6 rounded-lg shadow-lg">
+        <h2 className="text-3xl font-bold text-center mb-4">Sign In</h2>
+        <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
+          {/* Username Input */}
+          <input
+            type="text"
+            placeholder="Enter Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="w-full p-2 bg-gray-800 border border-retroNeonGreen text-retroNeonGreen rounded"
+          />
+          
+          {/* Password Input */}
+          <input
+            type="password"
+            placeholder="Enter Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full p-2 bg-gray-800 border border-retroNeonGreen text-retroNeonGreen rounded"
+          />
+          
+          {/* Submit Button */}
+          <button type="submit" className="w-full border-2 border-retroNeonGreen px-4 py-2 hover:bg-retroNeonGreen hover:text-retroBlack transition-all">
+            Sign In
+          </button>
+        </form>
       </div>
     </div>
   );
