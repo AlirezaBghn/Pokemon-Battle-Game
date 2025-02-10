@@ -1,30 +1,111 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import GuessGame from "./pages/GuessGame";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import GamePage from "./pages/GamePage";
+import UploadPage from "./pages/UploadPage";
+import GameSelectionPage from "./pages/GameSelectionPage";
+import GuessingGamePage from "./pages/GuessingGamePage";
 import Leaderboard from "./pages/Leaderboard";
-import SignIn from "./pages/SignIn"; // ✅ Import SignIn correctly
-import SignUp from "./pages/SignUp";
-import Profile from "./pages/Profile";
-import Navbar from "./components/Navbar"; // ✅ Import Navbar
+import SignInPage from "./pages/SignInPage";
+import SignUpPage from "./pages/SignUpPage";
+import CardBattleLeaderboard from "./pages/CardBattleLeaderboard";
+import SignOutButton from "./components/SignOutButton";
+import Cookies from "js-cookie";
+import { useState, createContext, useContext } from "react";
+
+const AuthContext = createContext();
+
+export const useAuth = () => useContext(AuthContext);
+
+const RequireAuth = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+
+  if (!isAuthenticated) {
+    return <Navigate to="/signin" />;
+  }
+
+  return (
+    <>
+      <SignOutButton />
+      {children}
+    </>
+  );
+};
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    !!Cookies.get("token")
+  );
+
   return (
-    <Router>
-      <Navbar /> {/* ✅ Use Navbar */}
-      {/* Main Content */}
-      <main className="flex justify-center items-center min-h-screen bg-retroBlack">
-        <div className="w-full flex justify-center items-center min-h-screen p-4">
-          <Routes>
-            <Route path="/" element={<GuessGame />} />
-            <Route path="/leaderboard" element={<Leaderboard />} />
-            <Route path="/signin" element={<SignIn />} />{" "}
-            {/* ✅ Add SignIn Route */}
-            <Route path="/signup" element={<SignUp />} />
-            <Route path="/profile" element={<Profile />} />
-          </Routes>
-        </div>
-      </main>
-    </Router>
+    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
+      <Router>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <RequireAuth>
+                <HomePage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/game"
+            element={
+              <RequireAuth>
+                <GamePage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/upload"
+            element={
+              <RequireAuth>
+                <UploadPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/game-selection"
+            element={
+              <RequireAuth>
+                <GameSelectionPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/guessing-game"
+            element={
+              <RequireAuth>
+                <GuessingGamePage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/leaderboard"
+            element={
+              <RequireAuth>
+                <Leaderboard />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/card-battle-leaderboard"
+            element={
+              <RequireAuth>
+                <CardBattleLeaderboard />
+              </RequireAuth>
+            }
+          />
+          <Route path="/signin" element={<SignInPage />} />
+          <Route path="/signup" element={<SignUpPage />} />
+        </Routes>
+      </Router>
+    </AuthContext.Provider>
   );
 }
 
