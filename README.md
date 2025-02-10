@@ -1,109 +1,140 @@
-# Pokemon Game Project
+# Pokemon Battle Game
 
-## Project Overview
+## Overview
 
-This project is a Pokemon game that includes both frontend and backend components. The frontend is built using modern web technologies, while the backend is powered by a robust server-side framework. The game allows users to interact with Pokemon characters, battle, and manage their Pokemon collection.
+Pokemon Battle Game is a simple game where players can battle their Pokemon against PC. The game is built using Express , Mongoose , JavaScript , React , vite and Tailwinds.
 
-## Directory Structure
+There are two games included:
 
-```
-Pokemon.game/
-├── Project/
-│   ├── frontend/
-│   │   ├── src/
-│   │   │   ├── components/
-│   │   │   ├── pages/
-│   │   │   ├── App.js
-│   │   │   └── index.js
-│   │   ├── public/
-│   │   │   ├── index.html
-│   │   │   └── ...
-│   │   ├── package.json
-│   │   └── ...
-│   ├── backend/
-│   │   ├── src/
-│   │   │   ├── controllers/
-│   │   │   ├── models/
-│   │   │   ├── routes/
-│   │   │   └── server.js
-│   │   ├── config/
-│   │   │   ├── db.js
-│   │   │   └── ...
-│   │   ├── package.json
-│   │   └── ...
-│   └── README.md
-```
+1. **Guessing Game Card**: A game where players guess the Pokemon card.
+2. **Card Game**: A card game similar to the Persian casino card game.
 
-- **frontend/**: Contains the frontend code of the project.
+## Features
 
-  - **src/**: Source code for the frontend.
-    - **components/**: React components.
-    - **pages/**: React pages.
-    - **App.js**: Main App component.
-    - **index.js**: Entry point of the frontend application.
-  - **public/**: Public assets for the frontend.
-    - **index.html**: Main HTML file.
-  - **package.json**: Lists frontend dependencies and scripts.
-
-- **backend/**: Contains the backend code of the project.
-  - **src/**: Source code for the backend.
-    - **controllers/**: Controllers for handling requests.
-    - **models/**: Database models.
-    - **routes/**: API routes.
-    - **server.js**: Entry point of the backend application.
-  - **config/**: Configuration files for the backend.
-    - **db.js**: Database configuration.
-  - **package.json**: Lists backend dependencies and scripts.
-
-## Dependencies
-
-### Frontend
-
-- React
-- Redux
-- Axios
-- React Router
-
-### Backend
-
-- Express
-- Mongoose
-- dotenv
-- cors
+- Choose your Pokemon
+- Battle against other Pokemon
+- View battle results
 
 ## Installation
 
 ### Frontend
 
-1. Navigate to the frontend directory:
-   ```sh
-   cd Project/frontend
-   ```
-2. Install the dependencies:
-   ```sh
+1. Clone the repository:
+
+   git clone https://github.com/yourusername/Pokemon-Battle-Game.git
+
+2. Navigate to the frontend directory:
+
+   cd Pokemon-Battle-Game/frontend
+
+3. Install dependencies:
+
    npm install
-   ```
-3. Start the frontend development server:
-   ```sh
-   npm start
-   ```
 
 ### Backend
 
 1. Navigate to the backend directory:
-   ```sh
-   cd Project/backend
-   ```
-2. Install the dependencies:
-   ```sh
+
+   cd Pokemon-Battle-Game/backend
+
+2. Install dependencies:
+
    npm install
-   ```
-3. Start the backend server:
-   ```sh
+
+## Usage
+
+### Frontend
+
+1. Start the frontend:
+
    npm start
-   ```
 
-## Running the Project
+2. Open your browser and navigate to `http://localhost:${port}`.
 
-1. Ensure both frontend and backend servers are running.
-2. Open your browser and navigate to the frontend server (usually `http://localhost:3000`).
+### Backend
+
+1. Start the backend:
+
+   npm start
+
+2. The backend will run on `http://localhost:${port}`.
+
+## Environment Variables
+
+The project uses a `.env` file to manage environment variables. Create a `.env` file in the root directory of the backend with the following content:
+
+```
+PORT=5000
+DATABASE_URL=your_database_url
+JWT_SECRET=your_jwt_secret
+```
+
+Replace `your_database_url` and `your_jwt_secret` with your actual database URL and JWT secret.
+
+## Directory Structure
+
+```
+/C:/Users/a/OneDrive/Desktop/pokemon repo/Pokemon-Battle-Game/
+├── .gitignore
+├── README.md
+├── .env
+├── frontend/
+│   ├── .gitignore
+│   ├── package.json
+│   ├── src/
+│   │   ├── index.html
+│   │   ├── App.jsx
+│   │   ├── main.js
+│   │   ├── styles.css
+│   │   ├── components/
+│   │   │   ├── SignOutButton.jsx
+│   │   │   ├── Header.jsx
+│   │   │   ├── Footer.jsx
+│   │   │   ├── PokemonCard.jsx
+│   │   │   ├── BattleButton.jsx
+│   │   │   └── LeaderboardTable.jsx
+│   │   │
+│   │   ├── pages/
+│   │   │   ├── HomePage.jsx
+│   │   │   ├── GamePage.jsx
+│   │   │   ├── UploadPage.jsx
+│   │   │   ├── GameSelectionPage.jsx
+│   │   │   ├── GuessingGamePage.jsx
+│   │   │   ├── Leaderboard.jsx
+│   │   │   ├── SignInPage.jsx
+│   │   │   ├── SignUpPage.jsx
+│   │   │   └── CardBattleLeaderboard.jsx
+│   └───│
+│
+├── backend/
+│   ├── .gitignore
+│   ├── package.json
+│   ├── server.js
+│   ├── routes/
+│   │   ├── gameResultRoutes.js
+│   │   ├── cardsRoutes.js
+│   │   ├── upload.js
+│   │   ├── leaderboardRoutes.js
+│   │   └── authRouter.js
+│   ├── controllers/
+│   │   ├── gameResultController.js
+│   │   ├── cardsController.js
+│   │   ├── uploadController.js
+│   │   ├── leaderboardController.js
+│   │   └── authController.js
+│   ├── db/
+│   │   └── db.js
+│   ├── middleware/
+│   │   └── errorHandler.js
+│   ├── uploads/
+│   │   ├── images/
+│   │   │   ├── pokemon1.png
+│   │   │   ├── pokemon2.png
+│   │   │   └── // other images
+│   │   └── // other uploaded files
+│   ├── utils/
+│   │   ├── asyncHandler.js
+│   └── └── ErrorResponse.js
+└── node_modules/
+
+```
