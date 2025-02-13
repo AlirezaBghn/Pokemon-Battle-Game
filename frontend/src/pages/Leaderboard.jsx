@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { backendAPI } from "../services/api";
 
 function Leaderboard() {
@@ -7,71 +7,67 @@ function Leaderboard() {
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
-        const res = await backendAPI.get("/leaderboard");
-        setLeaderboard(res.data);
+        const response = await backendAPI.get("/api/leaderboard");
+        // Deduplicate: for each username, keep the entry with the highest score
+        const deduped = Object.values(
+          response.data.reduce((acc, cur) => {
+            // If no entry exists for the user or current score is higher, update it
+            if (!acc[cur.username] || cur.score > acc[cur.username].score) {
+              acc[cur.username] = cur;
+            }
+            return acc;
+          }, {})
+        );
+        // Optionally, sort the deduplicated list by score descending
+        deduped.sort((a, b) => b.score - a.score);
+        setLeaderboard(deduped);
       } catch (error) {
         console.error("Error fetching leaderboard", error);
       }
     };
+
     fetchLeaderboard();
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black flex flex-col items-center justify-center p-6 font-mono">
-      <div className="max-w-5xl w-full bg-gray-900 border border-green-500 p-12 rounded-xl shadow-2xl text-lime-400">
-        <h2 className="text-4xl font-bold text-center mb-8 drop-shadow-[0_0_10px_rgba(0,255,0,0.8)]">
+    <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black p-4 font-mono">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-5xl font-bold text-center text-lime-400 mb-6 drop-shadow-[0_0_10px_rgba(0,255,0,0.8)]">
           🎖️ Leaderboard
-        </h2>
-
-        {leaderboard.length === 0 ? (
-          <p className="text-center text-gray-300 text-xl">No scores yet!</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-lg">
-              <thead>
-                <tr className="bg-gray-800 text-lime-400 text-xl">
-                  <th className="border border-green-500 px-6 py-4 text-center">
-                    🏆 Rank
-                  </th>
-                  <th className="border border-green-500 px-6 py-4">
-                    👤 Username
-                  </th>
-                  <th className="border border-green-500 px-6 py-4 text-center">
-                    💯 Score
-                  </th>
-                  <th className="border border-green-500 px-6 py-4 text-center">
-                    📅 Date
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {leaderboard.map((entry, index) => (
-                  <tr
-                    key={entry._id}
-                    className={`text-xl ${
-                      index === 0
-                        ? "bg-yellow-600 text-black font-bold"
-                        : "bg-gray-800"
-                    } hover:bg-gray-700`}
-                  >
-                    <td className="border border-green-500 px-6 py-4 text-center">
-                      {index + 1}
-                    </td>
-                    <td className="border border-green-500 px-6 py-4">
-                      {entry.username}
-                    </td>
-                    <td className="border border-green-500 px-6 py-4 text-center">
-                      {entry.score}
-                    </td>
-                    <td className="border border-green-500 px-6 py-4 text-center">
-                      {new Date(entry.date).toLocaleString()}
-                    </td>
+        </h1>
+        <div className="bg-gray-800 p-4 rounded-lg shadow-lg">
+          {leaderboard.length === 0 ? (
+            <p className="text-center text-lime-400 text-xl">No scores yet!</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-lime-400">
+                <thead>
+                  <tr>
+                    <th className="text-left p-2">🏆 Rank</th>
+                    <th className="text-left p-2">👤 Username</th>
+                    <th className="text-left p-2">💯 Score</th>
+                    <th className="text-left p-2">📅 Date</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                </thead>
+                <tbody>
+                  {leaderboard.map((entry, index) => (
+                    <tr
+                      key={entry._id || index}
+                      className="border-t border-gray-700 hover:bg-gray-700 text-xl"
+                    >
+                      <td className="p-2 text-center">{index + 1}</td>
+                      <td className="p-2">{entry.username}</td>
+                      <td className="p-2 text-center">{entry.score}</td>
+                      <td className="p-2 text-center">
+                        {new Date(entry.date).toLocaleString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

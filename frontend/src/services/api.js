@@ -1,13 +1,8 @@
 import axios from "axios";
-import Cookies from "js-cookie";
-
-const token = Cookies.get("token");
 
 export const backendAPI = axios.create({
   baseURL: "http://localhost:5005",
-  headers: {
-    Authorization: token ? `Bearer ${token}` : "",
-  },
+  withCredentials: true,
 });
 
 export const pokeAPI = axios.create({
@@ -20,6 +15,29 @@ export const fetchCards = async () => {
     return response.data;
   } catch (error) {
     console.error("Error fetching cards", error);
+    throw error;
+  }
+};
+
+export const fetchLeaderboard = async () => {
+  try {
+    const response = await backendAPI.get("/api/leaderboard");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching leaderboard", error);
+    throw error;
+  }
+};
+
+export const createScore = async (username, score) => {
+  try {
+    const response = await backendAPI.post("/api/leaderboard", {
+      username,
+      score,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error creating score", error);
     throw error;
   }
 };

@@ -1,11 +1,8 @@
 import { useState, useEffect } from "react";
 import Card from "../components/Card";
-import { fetchCards } from "../services/api";
-import axios from "axios";
-import Cookies from "js-cookie";
-import { useNavigate } from "react-router-dom";
+import { backendAPI } from "../services/api";
 
-function GamePage() {
+function BattleGamePage() {
   const [userCards, setUserCards] = useState([]);
   const [pcCards, setPcCards] = useState([]);
   const [selectedUserCard, setSelectedUserCard] = useState(null);
@@ -13,36 +10,31 @@ function GamePage() {
   const [userScore, setUserScore] = useState(0);
   const [pcScore, setPcScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
-  const [, setResult] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [roundMessage, setRoundMessage] = useState("");
-  const [roundResult, setRoundResult] = useState(null); // to store current round result
+  const [roundResult, setRoundResult] = useState(null);
   const [username, setUsername] = useState("");
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
+  // Fetch logged-in user
   useEffect(() => {
     const getUser = async () => {
       try {
-        const res = await axios.get("/api/user", {
-          headers: {
-            Authorization: `Bearer ${Cookies.get("token")}`,
-          },
-        });
+        const res = await backendAPI.get("/api/user");
         setUsername(res.data.username);
       } catch (error) {
         console.error("Error fetching user", error);
       }
     };
-
     getUser();
   }, []);
 
+  // Fetch cards and shuffle them
   useEffect(() => {
     const getCards = async () => {
       try {
-        const data = await fetchCards();
+        const res = await backendAPI.get("/api/cards");
+        const data = res.data;
         const shuffled = data.sort(() => Math.random() - 0.5);
-        // Deal 9 random cards to the user and 9 to the PC.
         setUserCards(shuffled.slice(0, 9));
         setPcCards(shuffled.slice(9, 18));
         setLoading(false);
@@ -51,47 +43,52 @@ function GamePage() {
         setLoading(false);
       }
     };
-
     getCards();
   }, []);
 
+  // Handle a card play
   const handleCardPlay = (card) => {
-    if (selectedUserCard || gameOver) return; // prevent multiple selections
+    if (selectedUserCard || gameOver) return;
     setSelectedUserCard(card);
-
-    // PC randomly selects a card from its hand:
     const randomIndex = Math.floor(Math.random() * pcCards.length);
     const pcCard = pcCards[randomIndex];
     setSelectedPcCard(pcCard);
 
+    // Calculate scores locally so we can update immediately.
+    let updatedUserScore = userScore;
+    let updatedPcScore = pcScore;
     let roundWinner = null;
+
     if (card.power > pcCard.power) {
       roundWinner = "user";
-      setUserScore((prev) => prev + 1);
+      updatedUserScore += 1;
       setRoundMessage("You win this round!");
     } else if (card.power < pcCard.power) {
       roundWinner = "pc";
-      setPcScore((prev) => prev + 1);
+      updatedPcScore += 1;
       setRoundMessage("PC wins this round!");
     } else {
       roundWinner = "tie";
       setRoundMessage("It's a tie round!");
     }
 
-    // Set the round result for styling:
+    // Update state with the new scores.
+    setUserScore(updatedUserScore);
+    setPcScore(updatedPcScore);
+
     setRoundResult({
       winner: roundWinner,
       userCardId: card.id,
       pcCardId: pcCard.id,
     });
 
-    // Wait 1 second (to allow the flip animation and result highlighting to show)
+    // After a short delay, remove the played cards and check for game over.
     setTimeout(() => {
       setUserCards((prevUserCards) => {
         const newUserCards = prevUserCards.filter((c) => c.id !== card.id);
         if (newUserCards.length === 0) {
           setGameOver(true);
-          determineWinner();
+          determineWinner(updatedUserScore, updatedPcScore);
         }
         return newUserCards;
       });
@@ -105,26 +102,27 @@ function GamePage() {
     }, 1000);
   };
 
-  const determineWinner = async () => {
+  // Determine and post the winner using the final scores
+  const determineWinner = async (finalUserScore, finalPcScore) => {
     let winner;
-    if (userScore > pcScore) winner = "User";
-    else if (userScore < pcScore) winner = "PC";
+    if (finalUserScore > finalPcScore) winner = "User";
+    else if (finalUserScore < finalPcScore) winner = "PC";
     else winner = "Tie";
-
     try {
-      const res = await fetch("/api/game-results", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ winner, userScore, pcScore, username }),
+      await backendAPI.post("/api/game-results", {
+        winner,
+        userScore: finalUserScore,
+        pcScore: finalPcScore,
+        username,
+        gameType: "BattleGame",
       });
-      const data = await res.json();
-      setResult(data);
     } catch (err) {
       console.error(err);
     }
   };
 
-  const resetGame = () => {
+  // Reset the game
+  const resetGame = async () => {
     setLoading(true);
     setUserCards([]);
     setPcCards([]);
@@ -133,20 +131,19 @@ function GamePage() {
     setUserScore(0);
     setPcScore(0);
     setGameOver(false);
-    setResult(null);
     setRoundMessage("");
     setRoundResult(null);
-    fetchCards()
-      .then((data) => {
-        const shuffled = data.sort(() => Math.random() - 0.5);
-        setUserCards(shuffled.slice(0, 9));
-        setPcCards(shuffled.slice(9, 18));
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setLoading(false);
-      });
+    try {
+      const res = await backendAPI.get("/api/cards");
+      const data = res.data;
+      const shuffled = data.sort(() => Math.random() - 0.5);
+      setUserCards(shuffled.slice(0, 9));
+      setPcCards(shuffled.slice(9, 18));
+      setLoading(false);
+    } catch (err) {
+      console.error("Error fetching cards", err);
+      setLoading(false);
+    }
   };
 
   if (loading) {
@@ -163,14 +160,6 @@ function GamePage() {
         <h1 className="text-5xl font-bold text-center text-lime-400 mb-6 drop-shadow-[0_0_10px_rgba(0,255,0,0.8)]">
           Card Battle
         </h1>
-        <div style={{ position: "absolute", top: 10, left: 10 }}>
-          <button
-            className="px-4 py-2 bg-gray-800 border border-green-500 text-lime-400 font-bold rounded hover:bg-gray-700"
-            onClick={() => navigate("/card-battle-leaderboard")}
-          >
-            Leaderboard
-          </button>
-        </div>
         <div className="flex justify-around mb-4">
           <div className="text-lime-400 text-xl">Player: {username}</div>
           <div className="text-lime-400 text-xl">User Score: {userScore}</div>
@@ -182,7 +171,6 @@ function GamePage() {
           </div>
         )}
         <div className="grid grid-cols-2 gap-8">
-          {/* User's Cards (always face up) */}
           <div>
             <h2 className="text-2xl font-semibold text-lime-400 mb-2">
               Your Cards
@@ -208,7 +196,6 @@ function GamePage() {
               ))}
             </div>
           </div>
-          {/* PC's Cards (always hidden until played) */}
           <div>
             <h2 className="text-2xl font-semibold text-lime-400 mb-2">
               PC Cards
@@ -257,4 +244,4 @@ function GamePage() {
   );
 }
 
-export default GamePage;
+export default BattleGamePage;

@@ -10,4 +10,3 @@ export default defineConfig({
     },
   },
 });
-// ensures that your API requests are correctly routed to the backend server.

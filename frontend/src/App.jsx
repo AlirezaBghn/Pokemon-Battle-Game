@@ -1,111 +1,37 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
-import HomePage from "./pages/HomePage";
-import GamePage from "./pages/GamePage";
-import UploadPage from "./pages/UploadPage";
-import GameSelectionPage from "./pages/GameSelectionPage";
-import GuessingGamePage from "./pages/GuessingGamePage";
-import Leaderboard from "./pages/Leaderboard";
-import SignInPage from "./pages/SignInPage";
-import SignUpPage from "./pages/SignUpPage";
-import CardBattleLeaderboard from "./pages/CardBattleLeaderboard";
-import SignOutButton from "./components/SignOutButton";
-import Cookies from "js-cookie";
-import { useState, createContext, useContext } from "react";
-
-const AuthContext = createContext();
-
-export const useAuth = () => useContext(AuthContext);
-
-const RequireAuth = ({ children }) => {
-  const { isAuthenticated } = useAuth();
-
-  if (!isAuthenticated) {
-    return <Navigate to="/signin" />;
-  }
-
-  return (
-    <>
-      <SignOutButton />
-      {children}
-    </>
-  );
-};
+import { Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import HomePage from "./pages/HomePage.jsx";
+import SignInPage from "./pages/SignInPage.jsx";
+import SignUpPage from "./pages/SignUpPage.jsx";
+import GameSelectionPage from "./pages/GameSelectionPage.jsx";
+import GuessGame from "./pages/GuessGame.jsx";
+import Leaderboard from "./pages/Leaderboard.jsx";
+import BattleGamePage from "./pages/BattleGamePage.jsx"; // Import BattleGamePage
+import BattleGameLeaderboardPage from "./pages/BattleGameLeaderboardPage.jsx"; // Import BattleGameLeaderboardPage
+import AuthenticatedLayout from "./layouts/AuthenticatedLayout.jsx";
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    !!Cookies.get("token")
-  );
-
   return (
-    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
-      <Router>
-        <Routes>
+    <AuthProvider>
+      <Routes>
+        <Route path="/signin" element={<SignInPage />} />
+        <Route path="/signup" element={<SignUpPage />} />
+        {/* All routes below require authentication */}
+        <Route element={<AuthenticatedLayout />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/game-selection" element={<GameSelectionPage />} />
+          <Route path="/guessing-game" element={<GuessGame />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="/battle-game" element={<BattleGamePage />} />{" "}
+          {/* Add BattleGamePage route */}
           <Route
-            path="/"
-            element={
-              <RequireAuth>
-                <HomePage />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/game"
-            element={
-              <RequireAuth>
-                <GamePage />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/upload"
-            element={
-              <RequireAuth>
-                <UploadPage />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/game-selection"
-            element={
-              <RequireAuth>
-                <GameSelectionPage />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/guessing-game"
-            element={
-              <RequireAuth>
-                <GuessingGamePage />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/leaderboard"
-            element={
-              <RequireAuth>
-                <Leaderboard />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/card-battle-leaderboard"
-            element={
-              <RequireAuth>
-                <CardBattleLeaderboard />
-              </RequireAuth>
-            }
-          />
-          <Route path="/signin" element={<SignInPage />} />
-          <Route path="/signup" element={<SignUpPage />} />
-        </Routes>
-      </Router>
-    </AuthContext.Provider>
+            path="/battle-game-leaderboard"
+            element={<BattleGameLeaderboardPage />}
+          />{" "}
+          {/* Add BattleGameLeaderboardPage route */}
+        </Route>
+      </Routes>
+    </AuthProvider>
   );
 }
 

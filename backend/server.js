@@ -1,36 +1,37 @@
-// backend/server.js
-import gameResultRoutes from "./routes/gameResultRoutes.js";
-import cardsRoutes from "./routes/cardsRoutes.js";
-import uploadRoutes from "./routes/upload.js";
-import leaderboardRoutes from "./routes/leaderboardRoutes.js";
-import authRouter from "./routes/authRouter.js";
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import connectDB from "./db/db.js"; // if you use a database; otherwise, you can remove this line
-import errorHandler from "./middleware/errorHandler.js"; // your custom error handler
-
+import cookieParser from "cookie-parser";
+import connectDB from "./db/db.js";
+import { notFound, errorHandler } from "./utils/errorHandler.js";
+import authRoutes from "./routes/authRoutes.js";
+import leaderboardRoutes from "./routes/leaderboardRoutes.js";
+import cardsRoutes from "./routes/cardsRoutes.js";
+import gameResultsRoutes from "./routes/gameResultsRoutes.js"; // Import gameResultsRoutes
+import chatRouter from "./routes/chatRouter.js";
 dotenv.config();
 const app = express();
 
-connectDB(); // Connect to your DB if needed
+connectDB();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 app.use(express.json());
+app.use(cookieParser());
 
-// Serve static files from the "uploads" folder
 app.use("/uploads", express.static("uploads"));
 
-// Mount the upload routes under the "/api" path
-app.use("/api", uploadRoutes);
-app.use("/api", authRouter);
-
-// cards
-app.use("/api/game-results", gameResultRoutes);
+app.use("/api", authRoutes);
+app.use("/api/leaderboard", leaderboardRoutes);
 app.use("/api/cards", cardsRoutes);
-app.use("/leaderboard", leaderboardRoutes);
+app.use("/api/game-results", gameResultsRoutes); // Add gameResultsRoutes
+app.use("/api/pokemonAI", chatRouter);
 
-// Error handling middleware (should be last)
+app.use(notFound);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5005;

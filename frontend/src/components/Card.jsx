@@ -1,11 +1,8 @@
 import PropTypes from "prop-types";
 
 function Card({ card, onClick, flipped, result, selected, faceDown = false }) {
-  // If the card should be shown face up (i.e. for the user),
-  // then ignore the flipped state and force it to be true.
   const isFlipped = faceDown ? flipped : true;
 
-  // Determine extra classes for result highlighting:
   let resultClasses = "";
   if (result === "win") {
     resultClasses =
@@ -23,7 +20,7 @@ function Card({ card, onClick, flipped, result, selected, faceDown = false }) {
 
   return (
     <div
-      className={`w-24 h-36 m-2 cursor-pointer transition-transform duration-300 transform hover:scale-105 ${resultClasses}`}
+      className={`w-24 h-36 m-2 cursor-pointer transition-transform duration-300 ${resultClasses}`}
       onClick={onClick}
     >
       {/* Flip-card container */}
@@ -36,10 +33,10 @@ function Card({ card, onClick, flipped, result, selected, faceDown = false }) {
       >
         {/* Back Face (face down) */}
         <div
-          className="absolute w-full h-full flex items-center justify-center text-3xl font-bold text-lime-400 rounded-lg"
+          className="absolute w-full h-full flex items-center justify-center text-3xl font-bold text-green-400 rounded-lg"
           style={{
             background:
-              "repeating-linear-gradient(45deg, #2d2d2d, #2d2d2d 4px, #1a1a1a 4px, #1a1a1a 8px)",
+              "repeating-linear-gradient(45deg, #444, #444 4px, #222 4px, #222 8px)",
             backfaceVisibility: "hidden",
           }}
         >
@@ -47,7 +44,7 @@ function Card({ card, onClick, flipped, result, selected, faceDown = false }) {
         </div>
         {/* Front Face (revealed) */}
         <div
-          className="absolute w-full h-full flex flex-col items-center justify-center rounded-lg p-1 text-center bg-black bg-opacity-90 text-lime-400"
+          className="absolute w-full h-full flex flex-col items-center justify-center rounded-lg p-1 text-center bg-black bg-opacity-80 text-green-200"
           style={{
             transform: "rotateY(180deg)",
             backfaceVisibility: "hidden",

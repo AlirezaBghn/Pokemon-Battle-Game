@@ -1,8 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-import Cookies from "js-cookie";
-import { useAuth } from "../App";
+import { backendAPI } from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
 function SignInPage() {
   const [email, setEmail] = useState("");
@@ -10,16 +9,32 @@ function SignInPage() {
   const navigate = useNavigate();
   const { setIsAuthenticated } = useAuth();
 
+  useEffect(() => {
+    const verifySession = async () => {
+      try {
+        const response = await backendAPI.get("/api/check-session");
+        if (response.data.authenticated) {
+          setIsAuthenticated(true);
+          navigate("/");
+        }
+      } catch (error) {
+        console.error("Error verifying session", error);
+      }
+    };
+    verifySession();
+  }, [setIsAuthenticated, navigate]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("/api/login", { email, password });
-      Cookies.set("token", res.data.token);
+      console.log("Attempting sign in with:", { email, password });
+      const response = await backendAPI.post("/api/login", { email, password });
+      console.log("Sign in response:", response.data);
       setIsAuthenticated(true);
       navigate("/");
     } catch (err) {
-      console.error(err);
-      alert("Error signing in");
+      console.error("Error signing in:", err);
+      alert(err.response?.data?.message || "Error signing in");
     }
   };
 

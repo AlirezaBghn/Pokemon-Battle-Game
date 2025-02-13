@@ -1,13 +1,13 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import Cookies from "js-cookie";
 
 function SignUpPage() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -17,16 +17,24 @@ function SignUpPage() {
       return;
     }
     try {
-      const res = await axios.post("/api/register", {
+      console.log("Sending signup request with data:", {
         username,
         email,
         password,
       });
-      Cookies.set("token", res.data.token);
+      await axios.post(
+        "/api/register",
+        {
+          username,
+          email,
+          password,
+        },
+        { withCredentials: true }
+      );
       navigate("/signin");
     } catch (err) {
-      console.error(err);
-      alert("Error signing up");
+      console.error("Error during signup:", err);
+      setErrorMessage(err.response.data.message || "Error signing up");
     }
   };
 
@@ -96,6 +104,9 @@ function SignUpPage() {
               required
             />
           </div>
+          {errorMessage && (
+            <div className="mb-4 text-red-500 text-center">{errorMessage}</div>
+          )}
           <button
             type="submit"
             className="w-full bg-green-600 hover:bg-green-500 text-black p-3 rounded font-bold"

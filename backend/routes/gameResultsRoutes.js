@@ -1,12 +1,12 @@
 import express from "express";
 import {
   saveGameResult,
-  getAllGameResults,
-} from "../controllers/gameResultController.js";
+  getGameResults,
+} from "../controllers/gameResultsController.js";
 
 const router = express.Router();
 
 router.post("/", saveGameResult);
-router.get("/", getAllGameResults);
+router.get("/", getGameResults); // Add GET route for fetching game results
 
 export default router;
